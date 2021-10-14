@@ -4,13 +4,9 @@ import React, { useEffect, useRef } from "react"
 import * as PIXI from "pixi.js"
 import gsap from 'gsap'
 import { PixiPlugin } from "gsap/PixiPlugin"
-//import image from '../image.jpg'
-//import shine from '../orb.png'
-//import shine3 from '../shine3.png'
 import test from '../spark3.png'
 import space from '../space.jpg'
 import desertImage from '../desert.jpg'
-//import sparkle from '../sparkle.png'
 import { random } from "gsap/gsap-core"
 import { rotateCenter, arrangeGrid, randomRGB, arrangeRow, arrangeCircle } from './gsapeffects'
 import {chunk, flatten} from 'lodash'
