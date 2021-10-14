@@ -222,7 +222,7 @@ export default function PixiMatrix() {
                 colorize: randomRGB,
                 brightness: gsap.utils.random(1, 2, .1, true),
             },
-            //paused:true
+            paused:true
         })
 
         //falling
@@ -244,11 +244,11 @@ export default function PixiMatrix() {
         },
             {
             ease: 'circle',
-            duration: gsap.utils.random(0.5, 1, .01, true),
+            duration: gsap.utils.random(0.5, 2, .01, true),
                 pixi: {
-                    y: `+=20`,
+                    y: `+=30`,
                     colorize: gsap.utils.random(['yellow', 'orange', 'white'], true),
-                    brightness: gsap.utils.random(1, 1.5, .1, true),
+                    brightness: gsap.utils.random(0.9, 1.1, .1, true),
                     //alpha: 0,
                 },
             stagger: {
@@ -258,7 +258,7 @@ export default function PixiMatrix() {
                 repeatRefresh: true,
                
                 },
-            paused: true
+            //paused: true
         })
         
         const tl2 = gsap.timeline()
@@ -364,8 +364,8 @@ export default function PixiMatrix() {
         })
 
         gsap.to(customFilter.uniforms, {
-            duration: 1,
-            time: 5.0,
+            duration: 5,
+            time: 12.0,
             ease: 'linear',
             rotation: gsap.utils.random(1, 360,1, true),
             repeat: -1,
