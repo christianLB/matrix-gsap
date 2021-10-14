@@ -7,7 +7,8 @@ $font-main: 'Matrix', sans-serif;
 
 body {
   //background-color: #064414;
-  user-select: none
+  user-select: none;
+  overflow: hidden;
 }
 .App {
   background-color: black;
