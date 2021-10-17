@@ -33,17 +33,17 @@ mat2 Rot(float a) {
 float Star(vec2 uv, float a, float sparkle) {
     vec2 av1 = abs(uv);
     vec2 av2 = abs(uv*Rot(a));
-    vec2 av = min(av1, av2);
+    vec2 av = min(av1 , av2);
 
     vec3 col = vec3(0);
     float d = length(uv);
     float star = av1.x*av1.y;
     star = max(av1.x*av1.y, av2.x*av2.y);
-    star = max(0., 1.0-star*1e3);
+    star = max(0.3 * abs(sin(time * 10.)) , 1.0-star*1e3);
 
-    float m = min(5., 1e-2/d);
+    float m = min(4., 1e-2/d);
 
-    return m+pow(star, 4.)*sparkle;
+    return m+pow(star, 6.)*sparkle;
 }
 
 
@@ -72,22 +72,34 @@ void main( void ) {
     color = vec3(
         Star(
             st - 0.5,
-            0.5 + sin(time * PI * speed),
+            0.1 + sin(time * PI * speed),
             0.9 + sin(time * PI * speed)
         )
     );
 
     vec4 cola = vec4(color.rgb, 0.0);
-    vec4 colb = vec4(color.rgb, 0.1);
+    vec4 colb = vec4(color.rgb, 0.007);
 
-    if (pct > 0.48) 
-        pct = 0.0;
+    //float a = cola.r;
+
+    //if (pct > 0.58) 
+     //   pct = 0.0;
+    
+     float t = pow(length(0.5 - st), 0.3);
+    
+    //vec4 col = mix(
+    //    vec4(colb),
+    //    vec4(cola),
+    //    t
+    //    );
     
     vec4 colfin = mix(
-        cola,
+        vec4(0.0),
         colb,
-        smoothstep(0.0, 0.01, pct) * smoothstep(0.5, 0.0, pct)
+        //t
+        smoothstep(1.094, 0.0, t)
     );
+    
     gl_FragColor = vec4(colfin);
 }`
 

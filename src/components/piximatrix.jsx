@@ -116,7 +116,13 @@ export default function PixiMatrix() {
             //const filter = new PIXI.filters.ColorMatrixFilter();
             let obj = PIXI.Sprite.from(test);
             //customFilter.padding = 0.5
-            const size = 70
+            // const cf = new PIXI.Filter(vertex, fragment, {
+            //     time: gsap.utils.random(0, 1, 0.1),
+            //     mouse: [globalX, globalY],
+            //     dimensions: [w, h],
+            // });
+            
+            const size = 120
             customFilter.uniforms.dimensions = [size, size]
             obj.width = size
             obj.height = size
@@ -189,18 +195,18 @@ export default function PixiMatrix() {
         //     },
         // })
         const tl = gsap.timeline()
-        // tl.arrangeCircle(allTiles, { duration: 12, stagger: .01, radiusX: 200, radiusY: 200, offset: 0, center: centerPoint() })
-        // tl.arrangeCircle(allTiles, { duration: 10, stagger: 0, radiusX: 800, radiusY: 100, offset: 0, center: centerPoint() })
-        // tl.arrangeCircle(allTiles, { duration: 12, stagger: 0, radiusX: 10, radiusY: 10, offset: 0, center: centerPoint() })
-        // tl.arrangeGrid(allTiles, { duration: 15, columns: tilesY})
-        // tl.arrangeCircle(allTiles, { duration: 15, stagger: 0, radiusX: 300, radiusY: 300, offset: 0, center: centerPoint() })
+        //   tl.arrangeCircle(allTiles, { duration: 12, stagger: .01, radiusX: 200, radiusY: 200, offset: 0, center: centerPoint() })
+        //   tl.arrangeCircle(allTiles, { duration: 10, stagger: 0, radiusX: 800, radiusY: 100, offset: 0, center: centerPoint() })
+        //   tl.arrangeCircle(allTiles, { duration: 1, stagger: 0, radiusX: 10, radiusY: 10, offset: 0, center: centerPoint() })
+        //   tl.arrangeGrid(allTiles, { duration: 15, columns: tilesY})
+        //   tl.arrangeCircle(allTiles, { duration: 1, stagger: 0, radiusX: 300, radiusY: 300, offset: 0, center: centerPoint() })
         const _2PI = 2 * Math.PI;
         const PI = Math.PI;
         let off = 0;
         tl.to(allTiles, {
-            duration: 0.1,
             ease: 'linear',
             repeat: -1,
+            duration: 1,
             onRepeat: function () {
                 off++
             },
@@ -208,18 +214,21 @@ export default function PixiMatrix() {
             //     amount: 2,
             //     repeat: -1,
             // },
+            onUpdate: function () {
+                //console.log(this.targets()[0].filters[0])
+                //this.targets()[0].filters[0].uniforms.time = 0.9
+            },
             repeatRefresh: true,
-            
             pixi: {
                 // x: function () { return gsap.utils.random(0, w, 1)},
                 // y: function () { return gsap.utils.random(0, h, 1) },
                 x: function (i) {
-                    return (w / 2) + 300 * Math.sin((i + off) * (_2PI / allTiles.length))
+                    return (w / 2) + 400 * Math.sin((i + i + off) * (_2PI * _2PI  / allTiles.length))
                 },
                 y: function (i) {
-                    return (h / 2) + 90 * Math.cos((i + off) * (PI / allTiles.length))
+                    return (h / 2) + 250 * Math.cos((i + i + off) * (PI * PI / allTiles.length))
                 },
-                colorize: randomRGB,
+                colorize: randomRGB,// gsap.utils.random(['white', 'rgb(200, 220, 0)'],true),//
                 brightness: gsap.utils.random(1, 2, .1, true),
             },
             paused:true
@@ -244,9 +253,9 @@ export default function PixiMatrix() {
         },
             {
             ease: 'circle',
-            duration: gsap.utils.random(0.5, 2, .01, true),
+            duration: gsap.utils.random(1, 5, .01, true),
                 pixi: {
-                    y: `+=30`,
+                    y: function() {return `+=${gsap.utils.random(50, 150, 1)}`},
                     colorize: gsap.utils.random(['yellow', 'orange', 'white'], true),
                     brightness: gsap.utils.random(0.9, 1.1, .1, true),
                     //alpha: 0,
