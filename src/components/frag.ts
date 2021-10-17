@@ -85,7 +85,7 @@ void main( void ) {
     //if (pct > 0.58) 
      //   pct = 0.0;
     
-     float t = pow(length(0.5 - st), 0.3);
+     float t = pow(length(0.5 - st), 0.5);
     
     //vec4 col = mix(
     //    vec4(colb),

@@ -122,7 +122,7 @@ export default function PixiMatrix() {
             //     dimensions: [w, h],
             // });
             
-            const size = 120
+            const size = 150
             customFilter.uniforms.dimensions = [size, size]
             obj.width = size
             obj.height = size
@@ -195,23 +195,23 @@ export default function PixiMatrix() {
         //     },
         // })
         const tl = gsap.timeline()
-        //   tl.arrangeCircle(allTiles, { duration: 12, stagger: .01, radiusX: 200, radiusY: 200, offset: 0, center: centerPoint() })
-        //   tl.arrangeCircle(allTiles, { duration: 10, stagger: 0, radiusX: 800, radiusY: 100, offset: 0, center: centerPoint() })
-        //   tl.arrangeCircle(allTiles, { duration: 1, stagger: 0, radiusX: 10, radiusY: 10, offset: 0, center: centerPoint() })
-        //   tl.arrangeGrid(allTiles, { duration: 15, columns: tilesY})
-        //   tl.arrangeCircle(allTiles, { duration: 1, stagger: 0, radiusX: 300, radiusY: 300, offset: 0, center: centerPoint() })
+        // tl.arrangeCircle(allTiles, { duration: 2, stagger: .01, radiusX: 200, radiusY: 200, offset: 0, center: centerPoint() })
+        // tl.arrangeCircle(allTiles, { duration: 2, stagger: 0, radiusX: 800, radiusY: 100, offset: 0, center: centerPoint() })
+        // tl.arrangeCircle(allTiles, { duration: 2, stagger: 0, radiusX: 10, radiusY: 10, offset: 0, center: centerPoint() })
+        // tl.arrangeGrid(allTiles, { duration: 10, columns: 5})
+        // tl.arrangeCircle(allTiles, { duration: 5, stagger: 0, radiusX: 300, radiusY: 300, offset: 0, center: centerPoint() })
         const _2PI = 2 * Math.PI;
         const PI = Math.PI;
         let off = 0;
         tl.to(allTiles, {
             ease: 'linear',
             repeat: -1,
-            duration: 1,
+            duration: 0.01,
             onRepeat: function () {
-                off++
+                //off++
             },
             // stagger: {
-            //     amount: 2,
+                //     amount: 2,
             //     repeat: -1,
             // },
             onUpdate: function () {
@@ -223,15 +223,19 @@ export default function PixiMatrix() {
                 // x: function () { return gsap.utils.random(0, w, 1)},
                 // y: function () { return gsap.utils.random(0, h, 1) },
                 x: function (i) {
-                    return (w / 2) + 400 * Math.sin((i + i + off) * (_2PI * _2PI  / allTiles.length))
+                    const xPI = Math.PI * globalX 
+                    const f = (w / 2) + 200 * Math.sin((i + off) * (xPI / allTiles.length))
+                    return f
                 },
                 y: function (i) {
-                    return (h / 2) + 250 * Math.cos((i + i + off) * (PI * PI / allTiles.length))
+                    const yPI = Math.PI * globalY
+                    const f = (h / 2) + 250 * Math.cos((i + off) * (yPI / allTiles.length))
+                    return f
                 },
                 colorize: randomRGB,// gsap.utils.random(['white', 'rgb(200, 220, 0)'],true),//
-                brightness: gsap.utils.random(1, 2, .1, true),
+                brightness: gsap.utils.random(1, 3, .1, true),
             },
-            paused:true
+            //paused:true
         })
 
         //falling
@@ -267,7 +271,7 @@ export default function PixiMatrix() {
                 repeatRefresh: true,
                
                 },
-            //paused: true
+            paused: true
         })
         
         const tl2 = gsap.timeline()
