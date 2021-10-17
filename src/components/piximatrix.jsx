@@ -143,7 +143,7 @@ export default function PixiMatrix() {
             return arr
         }
 
-        const tilesX = 35
+        const tilesX = 25
         const tilesY = 5
         const cols = [...Array(tilesX)].map(() => {
             return orbs({amount: tilesY})
@@ -200,41 +200,46 @@ export default function PixiMatrix() {
         // tl.arrangeCircle(allTiles, { duration: 2, stagger: 0, radiusX: 10, radiusY: 10, offset: 0, center: centerPoint() })
         // tl.arrangeGrid(allTiles, { duration: 10, columns: 5})
         // tl.arrangeCircle(allTiles, { duration: 5, stagger: 0, radiusX: 300, radiusY: 300, offset: 0, center: centerPoint() })
+        
+        //galaxy
         const _2PI = 2 * Math.PI;
         const PI = Math.PI;
-        let off = 0;
+        let Rx = 500
+        let Ry = 300
+        let off = 0
+        let xPI = Math.PI * 1 
+        let yPI = Math.PI * 1
+        
         tl.to(allTiles, {
-            ease: 'linear',
+            ease: 'none',
             repeat: -1,
-            duration: 0.01,
+            //duration: 10,
             onRepeat: function () {
-                //off++
+                //xPI += 1.1
+                //yPI += 1.1
+                //Rx += 1.1
+                //Ry *= 1
             },
-            // stagger: {
-                //     amount: 2,
-            //     repeat: -1,
-            // },
             onUpdate: function () {
-                //console.log(this.targets()[0].filters[0])
-                //this.targets()[0].filters[0].uniforms.time = 0.9
+                off += 0.0002
+                gsap.to(allTiles, {
+                    //duration: 3,
+                    //ease: 'none',
+                    pixi: {
+                        x: function (i) {
+                            const f = (w / 2) + Rx * Math.sin((i + off ) * (_2PI * globalY / allTiles.length))
+                            return f
+                        },
+                        y: function (i) {
+                            const f = (h / 2) + Ry * Math.cos((i + off ) * (_2PI * globalX / allTiles.length))
+                            return f
+                        },
+                        colorize: randomRGB,
+                        brightness: gsap.utils.random(1, 3, .1, true),
+                    },
+                })
             },
             repeatRefresh: true,
-            pixi: {
-                // x: function () { return gsap.utils.random(0, w, 1)},
-                // y: function () { return gsap.utils.random(0, h, 1) },
-                x: function (i) {
-                    const xPI = Math.PI * globalX 
-                    const f = (w / 2) + 200 * Math.sin((i + off) * (xPI / allTiles.length))
-                    return f
-                },
-                y: function (i) {
-                    const yPI = Math.PI * globalY
-                    const f = (h / 2) + 250 * Math.cos((i + off) * (yPI / allTiles.length))
-                    return f
-                },
-                colorize: randomRGB,// gsap.utils.random(['white', 'rgb(200, 220, 0)'],true),//
-                brightness: gsap.utils.random(1, 3, .1, true),
-            },
             //paused:true
         })
 
@@ -260,8 +265,8 @@ export default function PixiMatrix() {
             duration: gsap.utils.random(1, 5, .01, true),
                 pixi: {
                     y: function() {return `+=${gsap.utils.random(50, 150, 1)}`},
-                    colorize: gsap.utils.random(['yellow', 'orange', 'white'], true),
-                    brightness: gsap.utils.random(0.9, 1.1, .1, true),
+                    //colorize: gsap.utils.random(['yellow', 'orange', 'white'], true),
+                    //brightness: gsap.utils.random(0.9, 1.1, .1, true),
                     //alpha: 0,
                 },
             stagger: {
@@ -347,6 +352,7 @@ export default function PixiMatrix() {
             globalY = y;
             updateCircle()
             updateFilters()
+            console.log(globalX, globalY)
         }
         
         function updateFilters() {
