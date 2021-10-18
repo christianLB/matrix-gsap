@@ -31,8 +31,8 @@ export default function PixiMatrix() {
             //utils.sayHello(type);
         }
         
-        const w = window.innerWidth
-        const h = window.innerHeight
+        const w = 800
+        const h = 768
         let globalX = w / 2
         let globalY = h / 2
         let app = new PIXI.Application({ width: w, height: h });
@@ -43,13 +43,7 @@ export default function PixiMatrix() {
         }
 
         let { circleRadius } = globals
-        //custom filter 
-        // Build the filter customFilter
-        const customFilter = new PIXI.Filter(vertex, fragment, {
-            time: 0.5,
-            mouse: [globalX, globalY],
-            dimensions: [w, h],
-        });
+        
         //background///////////////////////////////////////////////////////
         const background = PIXI.Sprite.from(space);
         background.width = w;
@@ -82,7 +76,7 @@ export default function PixiMatrix() {
         reflect.alpha = [1, 0]
         layer.filters = [reflect]
         
-        background.filters = [reflect, customFilter]
+        background.filters = [reflect]
         app.stage.addChild(layer);
         const showLayer = new PIXI.Sprite(layer.getRenderTexture());
         app.stage.addChild(showLayer);
@@ -112,94 +106,107 @@ export default function PixiMatrix() {
         desert.filters  = [waveFilter]
         ////////////////////////////////////////////////////////////////////////////////////////////////
         
-        const orb = () => {
+        const star = ({ size = 70, filter = null}) => {
             //const filter = new PIXI.filters.ColorMatrixFilter();
             let obj = PIXI.Sprite.from(test);
-            //customFilter.padding = 0.5
-            // const cf = new PIXI.Filter(vertex, fragment, {
-            //     time: gsap.utils.random(0, 1, 0.1),
-            //     mouse: [globalX, globalY],
-            //     dimensions: [w, h],
-            // });
             
-            const size = 50
-            customFilter.uniforms.dimensions = [size, size]
+            filter.uniforms.dimensions = [size, size]
             obj.width = size
             obj.height = size
             obj.anchor.set(0.5);
-            obj.filters = [customFilter];
+            obj.filters = [filter];
             //app.stage.addChild(obj);
             layer.addChild(obj)
             return obj
         }
 
-        const orbs = ({ amount }) => {
-            const arr = []
+        const stars = ({ amount, size = 70 }) => {
+            //custom filter 
+            // Build the filter customFilter. fragment shader string is in a separate file.
+            const filter = new PIXI.Filter(vertex, fragment, {
+                time: 0.5,
+                mouse: [globalX, globalY],
+                dimensions: [size, size],
+            });
+            const filterTween = gsap.to(filter.uniforms, {
+                duration: 5,
+                time: 12.0,
+                ease: 'linear',
+                rotation: gsap.utils.random(1, 360,1, true),
+                repeat: -1,
+                //paused:true
+            })
+            
+            const arr = { sprites: [], filter, amount, filterTween}
             for (let i = 0; i < amount; i++) {
-                const o = orb()
-                arr.push(o)
-                //app.stage.addChild(l)
+                arr.sprites.push(star({ size, filter }))
             }
+            //blinking
+            arr.blinking = gsap.to(arr.sprites, {
+                pixi: {
+                    brightness: gsap.utils.random(1, 1, .1, true),
+                },
+                //stagger: {amount: 5, repeat: -1, from:'random'},
+                //ease: 'elastic',
+                //yoyo: true,
+                //duration: .1,//gsap.utils.random(.1, 1, 1, true),
+                //repeat: -1,
+                repeatRefresh: true,
+                //paused: true
+            }, 0)
+            
             return arr
         }
 
-        const tilesX = 40
+        const tilesX = 80
         const tilesY = 5
-        const cols = [...Array(tilesX)].map(() => {
-            return orbs({amount: tilesY})
-        })
-        const allTiles = flatten(cols);
+        const stars1 = stars({ amount: 100, size: 100})
+        const stars2 = stars({ amount: 20, size: 200 })
+        const stars3 = stars({ amount: 30, size: 230 })
+        //const cols = [...Array(tilesX)].map(() => {
+        //    return orbs({amount: tilesY})
+        //})
+
         const centerPoint = () => {
             return { x: w / 2, y: h / 2 }
         }
         
-        //const tl = gsap.timeline({repeat: -1, yoyo: true})
-        //rotateCenter({ targets: letters4, radiusX: 400, radiusY: 100, duration: .3, offset: 0, center: { x: w / 2, y: h / 2 + 10 } })
-        //rotateCenter({targets: letters5, radiusX:300, radiusY: 75, duration:.3, offset:0, center: { x: w / 2, y: h / 2 + 30 }})
-        //tl.arrangeCircle(letters6, { duration: .5, stagger: 0, radiusX:400, radiusY: 800, offset:0, center: centerPoint()})
-        //tl.arrangeCircle(orbs160, { duration: 0, stagger: 0, radiusX:300, radiusY: 300, offset:0, center: centerPoint()})
-        //tl.arrangeCircle(orbs160, { duration: 5, stagger: 0, radiusX:400, radiusY: 400, offset:0, center: centerPoint()})
-        //gsap.effects.blinkStagger(orbsa, { grid: [tilesX, tilesY], repeat: -1, duration: .2, from:'start' })
-        //gsap.effects.blinkStagger(orbsa, { grid: [tilesX, tilesY], repeat: -1, duration: .2, from:'end' })
-        // gsap.effects.blinkStagger(orbsa, { grid: [tilesX, tilesY], repeat: -1, duration: .2, from:'top', axis:'y' })
-        // gsap.effects.blinkStagger(orbsa, { grid: [tilesX, tilesY], repeat: -1, duration: .2, from:'bottom', axis:'x' })
-        // gsap.effects.blinkStagger(orbsa, { grid: [tilesX, tilesY], repeat: -1, duration: .2, from:'start'})
-        // gsap.effects.blinkStagger(orbsa, { grid: [tilesX, tilesY], repeat: -1, duration: .2, from:'end'})
-            
-        shuffle(cols).slice(0, tilesX).forEach(col => {
-            const randomDelay = gsap.utils.random(1, 5, 1, true)
-            const randomStagger = gsap.utils.random(3, 20, .5, true)
-            gsap.to(col, {
-                stagger: {
-                    amount: randomStagger(),
-                    repeat: 1,
-                    yoyo: true
-                },
-                delay: randomDelay(),
-                repeatDelay: randomDelay(),
-                repeatRefresh: true,
-                //pixi: {brightness: 3 },
-                pixi: {tint: randomRGB() },
-                repeat: -1,
-            })
-        })
+                   
+        // shuffle(cols).slice(0, tilesX).forEach(col => {
+        //     const randomDelay = gsap.utils.random(1, 5, 1, true)
+        //     const randomStagger = gsap.utils.random(3, 20, .5, true)
+        //     gsap.to(col, {
+        //         stagger: {
+        //             amount: randomStagger(),
+        //             repeat: 1,
+        //             yoyo: true
+        //         },
+        //         delay: randomDelay(),
+        //         repeatDelay: randomDelay(),
+        //         repeatRefresh: true,
+        //         //pixi: {brightness: 3 },
+        //         pixi: {tint: randomRGB() },
+        //         repeat: -1,
+        //     })
+        // })
         const randomAlpha = gsap.utils.random(.1, 5, .01, true)
         const randomDuration = gsap.utils.random(.1, .3, .1, true)
-        // gsap.set(allTiles, {
+        // gsap.set(_stars1, {
         //     pixi:{x:300, y: 300}
         // })
-        // gsap.set(allTiles, {
+        // gsap.set(_stars1, {
         //     pixi: {
         //         //scale: gsap.utils.random(.2, 13.15, .1, true),
         //         tint: gsap.utils.random(['red', 'green', 'yellow', 'orange', 'violet', 'lime', 'magenta'], true)
         //     },
         // })
         const tl = gsap.timeline()
-        // tl.arrangeCircle(allTiles, { duration: 2, stagger: .01, radiusX: 200, radiusY: 200, offset: 0, center: centerPoint() })
-        // tl.arrangeCircle(allTiles, { duration: 2, stagger: 0, radiusX: 800, radiusY: 100, offset: 0, center: centerPoint() })
-        // tl.arrangeCircle(allTiles, { duration: 2, stagger: 0, radiusX: 10, radiusY: 10, offset: 0, center: centerPoint() })
-        // tl.arrangeGrid(allTiles, { duration: 10, columns: 5})
-        // tl.arrangeCircle(allTiles, { duration: 5, stagger: 0, radiusX: 300, radiusY: 300, offset: 0, center: centerPoint() })
+        // tl.arrangeCircle(_stars1, { duration: 2, stagger: .01, radiusX: 200, radiusY: 200, offset: 0, center: centerPoint() })
+        // tl.arrangeCircle(_stars1, { duration: 2, stagger: 0, radiusX: 800, radiusY: 100, offset: 0, center: centerPoint() })
+        // tl.arrangeCircle(_stars1, { duration: 2, stagger: 0, radiusX: 10, radiusY: 10, offset: 0, center: centerPoint() })
+        // tl.arrangeGrid(_stars1, { duration: 10, columns: 5})
+        tl.arrangeCircle(stars2.sprites, { duration: 5, stagger: 0, radiusX: 300, radiusY: 300, offset: 0, center: centerPoint() }, 0)
+        tl.arrangeCircle(stars3.sprites, { duration: 5, stagger: 0, radiusX: 350, radiusY: 350, offset: 0, center: centerPoint() }, 0)
         
         //galaxy
         const _2PI = 2 * Math.PI;
@@ -210,7 +217,7 @@ export default function PixiMatrix() {
         let xPI = Math.PI * 1 
         let yPI = Math.PI * 1
         
-        tl.to(allTiles, {
+        tl.to(stars1.sprites, {
             ease: 'none',
             repeat: -1,
             
@@ -223,32 +230,32 @@ export default function PixiMatrix() {
             
             onUpdate: function () {
                 off += 0.0003
-                gsap.to(allTiles, {
+                gsap.to(stars1.sprites, {
                     duration: 1,
                     ease: 'none',
                     pixi: {
                         x: function (i) {
-                            const f = (w / 2) + Rx * Math.sin((i + off ) * (_2PI * i * off  / allTiles.length))
+                            const f = (w / 2) + Rx * Math.sin((i + off ) * (_2PI * i * off  / stars1.amount))
                             return f
                         },
                         y: function (i) {
-                            const f = (h / 2) + Ry * Math.cos((i + off ) * (_2PI * i  * off / allTiles.length))
+                            const f = (h / 2) + Ry * Math.cos((i + off ) * (_2PI * i  * off / stars1.amount))
                             return f
                         },
-                        colorize: randomRGB,
-                        brightness: gsap.utils.random(1, 3, .1, true),
+                        //colorize: randomRGB,
+                        //brightness: gsap.utils.random(1, 3, .1, true),
                     },
                 })
             },
             repeatRefresh: true,
             //paused:true
-        })
+        }, 0)
 
         //falling
-        const step = (2 * Math.PI) / allTiles.length
-        const i = gsap.utils.random(0, allTiles.length, 1, true)
+        const step = (2 * Math.PI) / stars1.amount
+        const i = gsap.utils.random(0, stars1.amount, 1, true)
       
-        gsap.fromTo(allTiles, {
+        gsap.fromTo(stars1.sprites, {
             pixi: () => {
                 const _i = i()
                 return {
@@ -282,19 +289,7 @@ export default function PixiMatrix() {
         
         const tl2 = gsap.timeline()
         
-        //blinking
-        tl2.to(allTiles, {
-            pixi: {
-                brightness: gsap.utils.random(1, 1, .1, true),
-            },
-            //stagger: {amount: 5, repeat: -1, from:'random'},
-            //ease: 'elastic',
-            //yoyo: true,
-            //duration: .1,//gsap.utils.random(.1, 1, 1, true),
-            //repeat: -1,
-            repeatRefresh: true,
-            //paused: true
-        },0)
+        
         
         //reflection wavyness
         gsap.to(reflect, {
@@ -328,7 +323,7 @@ export default function PixiMatrix() {
         
 
         const norm0100 = gsap.utils.mapRange(0,1,0, 200)
-        // gsap.to(allTiles, {
+        // gsap.to(_stars1, {
         //     duration: 5,
         //     onUpdate: function () {
         //         circle.clear()
@@ -356,7 +351,7 @@ export default function PixiMatrix() {
         }
         
         function updateFilters() {
-            customFilter.uniforms.mouse = [globalX, globalX]
+            //customFilter.uniforms.mouse = [globalX, globalX]
             waveFilter.center = [globalX, globalY]
         }
 
@@ -382,14 +377,7 @@ export default function PixiMatrix() {
             paused: true,
         })
 
-        gsap.to(customFilter.uniforms, {
-            duration: 5,
-            time: 12.0,
-            ease: 'linear',
-            rotation: gsap.utils.random(1, 360,1, true),
-            repeat: -1,
-            //paused:true
-        })
+        
 
         //expand
         let scene = 1
@@ -433,7 +421,7 @@ export default function PixiMatrix() {
                 }
             })
         }
-        // gsap.to(allTiles, {
+        // gsap.to(_stars1, {
         //     pixi: {
         //         brightness: gsap.utils.random(1, 3, .1, true),
         //     },
