@@ -122,7 +122,7 @@ export default function PixiMatrix() {
             //     dimensions: [w, h],
             // });
             
-            const size = 150
+            const size = 50
             customFilter.uniforms.dimensions = [size, size]
             obj.width = size
             obj.height = size
@@ -143,7 +143,7 @@ export default function PixiMatrix() {
             return arr
         }
 
-        const tilesX = 25
+        const tilesX = 40
         const tilesY = 5
         const cols = [...Array(tilesX)].map(() => {
             return orbs({amount: tilesY})
@@ -204,8 +204,8 @@ export default function PixiMatrix() {
         //galaxy
         const _2PI = 2 * Math.PI;
         const PI = Math.PI;
-        let Rx = 500
-        let Ry = 300
+        let Rx = 270
+        let Ry = 100
         let off = 0
         let xPI = Math.PI * 1 
         let yPI = Math.PI * 1
@@ -213,25 +213,26 @@ export default function PixiMatrix() {
         tl.to(allTiles, {
             ease: 'none',
             repeat: -1,
-            //duration: 10,
+            
             onRepeat: function () {
                 //xPI += 1.1
                 //yPI += 1.1
                 //Rx += 1.1
                 //Ry *= 1
             },
+            
             onUpdate: function () {
-                off += 0.0002
+                off += 0.0003
                 gsap.to(allTiles, {
-                    //duration: 3,
-                    //ease: 'none',
+                    duration: 1,
+                    ease: 'none',
                     pixi: {
                         x: function (i) {
-                            const f = (w / 2) + Rx * Math.sin((i + off ) * (_2PI * globalY / allTiles.length))
+                            const f = (w / 2) + Rx * Math.sin((i + off ) * (_2PI * i * off  / allTiles.length))
                             return f
                         },
                         y: function (i) {
-                            const f = (h / 2) + Ry * Math.cos((i + off ) * (_2PI * globalX / allTiles.length))
+                            const f = (h / 2) + Ry * Math.cos((i + off ) * (_2PI * i  * off / allTiles.length))
                             return f
                         },
                         colorize: randomRGB,
@@ -352,7 +353,6 @@ export default function PixiMatrix() {
             globalY = y;
             updateCircle()
             updateFilters()
-            console.log(globalX, globalY)
         }
         
         function updateFilters() {
