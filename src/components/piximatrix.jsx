@@ -31,7 +31,7 @@ export default function PixiMatrix() {
             //utils.sayHello(type);
         }
         
-        const w = 800
+        const w = 1024
         const h = 768
         let globalX = w / 2
         let globalY = h / 2
@@ -162,7 +162,7 @@ export default function PixiMatrix() {
         const tilesY = 5
         const stars1 = stars({ amount: 100, size: 100})
         const stars2 = stars({ amount: 20, size: 200 })
-        const stars3 = stars({ amount: 30, size: 230 })
+        const stars3 = stars({ amount: 30, size: 200 })
         //const cols = [...Array(tilesX)].map(() => {
         //    return orbs({amount: tilesY})
         //})
@@ -189,24 +189,18 @@ export default function PixiMatrix() {
         //         repeat: -1,
         //     })
         // })
-        const randomAlpha = gsap.utils.random(.1, 5, .01, true)
-        const randomDuration = gsap.utils.random(.1, .3, .1, true)
-        // gsap.set(_stars1, {
-        //     pixi:{x:300, y: 300}
-        // })
-        // gsap.set(_stars1, {
-        //     pixi: {
-        //         //scale: gsap.utils.random(.2, 13.15, .1, true),
-        //         tint: gsap.utils.random(['red', 'green', 'yellow', 'orange', 'violet', 'lime', 'magenta'], true)
-        //     },
-        // })
+                
         const tl = gsap.timeline()
         // tl.arrangeCircle(_stars1, { duration: 2, stagger: .01, radiusX: 200, radiusY: 200, offset: 0, center: centerPoint() })
         // tl.arrangeCircle(_stars1, { duration: 2, stagger: 0, radiusX: 800, radiusY: 100, offset: 0, center: centerPoint() })
         // tl.arrangeCircle(_stars1, { duration: 2, stagger: 0, radiusX: 10, radiusY: 10, offset: 0, center: centerPoint() })
         // tl.arrangeGrid(_stars1, { duration: 10, columns: 5})
-        tl.arrangeCircle(stars2.sprites, { duration: 5, stagger: 0, radiusX: 300, radiusY: 300, offset: 0, center: centerPoint() }, 0)
-        tl.arrangeCircle(stars3.sprites, { duration: 5, stagger: 0, radiusX: 350, radiusY: 350, offset: 0, center: centerPoint() }, 0)
+        const cp = centerPoint()
+        console.log(cp)
+        tl.arrangeCircle(stars2.sprites, { duration: 0, stagger: 0, radiusX: 200, radiusY: 200, offset: 0, center: {...cp, x: cp.x -100, y: cp.y} }, 0)
+        tl.arrangeCircle(stars3.sprites, { duration: 0, stagger: 0, radiusX: 200, radiusY: 200, offset: 0, center: {...cp, x: cp.x +100, y: cp.y} }, 0)
+        tl.blinkStagger(stars2.sprites, { duration: 0.1, from: 'end'}, 0)
+        tl.blinkStagger(stars3.sprites, { duration: 0.1, from: 'edges'}, 0)
         
         //galaxy
         const _2PI = 2 * Math.PI;

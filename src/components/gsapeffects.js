@@ -71,7 +71,7 @@ gsap.registerEffect({
 gsap.registerEffect({
     name: "blinkStagger",
     effect: (targets, config) => {
-        const { duration, ease, grid, axis, repeat, from, offset, center } = config
+        const { duration, ease, grid, axis, repeat, from } = config
         return gsap.to(targets,
             {
                 stagger: {
