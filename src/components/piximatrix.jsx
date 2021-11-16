@@ -71,7 +71,8 @@ export default function PixiMatrix() {
             pixi: {
                 rotation: -6,
                 y: '+=10'    
-            }
+            },
+            paused: true
         })
         gsap.to(boatSprite, {
             ease: 'power4.InOut',
@@ -80,7 +81,8 @@ export default function PixiMatrix() {
             repeatRefresh: true,
             pixi: {
                 x: gsap.utils.random(0, w - boatSprite.width, 1, true)    
-            }
+            },
+            paused: true
         })
         
         //background///////////////////////////////////////////////////////
@@ -118,7 +120,7 @@ export default function PixiMatrix() {
 
         //appending 
         app.stage.addChild(background);
-        layer.addChild(boatSprite)
+        //layer.addChild(boatSprite)
         layer.addChild(trailSprite);
         
         //reflection
@@ -680,5 +682,6 @@ export default function PixiMatrix() {
 
        
     }, []);
-    return <>{PlayBtn}{PauseBtn}{TrackBtn}</>;
+    // return <>{PlayBtn}{PauseBtn}{TrackBtn}</>;
+    return <></>;
 }
