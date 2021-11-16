@@ -17,6 +17,9 @@ import { Layer, Stage } from '@pixi/layers'
 import { ShockwaveFilter } from "@pixi/filter-shockwave"
 import { fragment, vertex } from './frag'
 import { fragment as spaceFragment } from './space'
+import barque from '../barque.mp3'
+import { useAudio } from "../hooks/useAudio"
+import { shuffle } from 'lodash'
 
 gsap.registerPlugin(MotionPathPlugin);
 gsap.registerPlugin(PixiPlugin)
@@ -24,7 +27,10 @@ PixiPlugin.registerPIXI(PIXI)
 
 
 
+
 export default function PixiMatrix() {
+    const {audio, PlayBtn, PauseBtn, TrackBtn, setHandler } = useAudio(barque)
+    
     useEffect(() => {
         if (process.browser) {
             let type = "WebGL";
@@ -41,8 +47,11 @@ export default function PixiMatrix() {
         let app = new PIXI.Application({ width: w, height: h });
         document.querySelector('#root').appendChild(app.view)
         
+        //let audio = new Audio(barque);
+        //audio.play();
+        
         const globals = {
-            circleRadius: 150
+            circleRadius: 200
         }
 
         let { circleRadius } = globals
@@ -166,15 +175,16 @@ export default function PixiMatrix() {
             //custom filter 
             // Build the filter customFilter. fragment shader string is in a separate file.
             const filter = new PIXI.Filter(vertex, fragment, {
-                time: 0.5,
+                time: gsap.utils.random(.1, 1, .1),
+                speed: gsap.utils.random(2., 100., .1),
                 mouse: [globalX, globalY],
                 dimensions: [size, size],
             });
             const filterTween = gsap.to(filter.uniforms, {
-                duration: 5,
-                time: 12.0,
+                duration: gsap.utils.random(.5, 1, .1),
+                time: 1.0,
                 ease: 'linear',
-                rotation: gsap.utils.random(1, 360, 1, true),
+                //rotation: gsap.utils.random(0, 180, 1, true),
                 repeat: -1,
                 //paused:true
             })
@@ -203,47 +213,27 @@ export default function PixiMatrix() {
 
         const tilesX = 80
         const tilesY = 5
-        const stars1 = stars({ amount: 40, size: 100 })
-        const stars2 = stars({ amount: 40, size: 115 })
-        const stars3 = stars({ amount: 40, size: 120 })
-        const stars4 = stars({ amount: 40, size: 125 })
-        const stars5 = stars({ amount: 40, size: 130 })
+        let stars1 = stars({ amount: 80, size: 150 })
+        let stars2 = stars({ amount: 80, size: 100 })
+        // let stars3 = stars({ amount: 40, size: 120 })
+        // let stars4 = stars({ amount: 40, size: 125 })
+        // let stars5 = stars({ amount: 240, size: 130 })
+                
+        const allStars = [
+            ...stars1.sprites,
+            ...stars2.sprites,
+            // ...stars3.sprites,
+            // ...stars4.sprites,
+            // ...stars5.sprites,
+        ]
 
-        const stars7 = stars({ amount: 40, size: 135 })
-        const stars8 = stars({ amount: 40, size: 145 })
-        const stars9 = stars({ amount: 40, size: 155 })
-        const stars10 = stars({ amount: 40, size: 160 })
-        const stars11 = stars({ amount: 40, size: 165 })
-        
-        const stars6 = stars({ amount: 5, size: 155 })
-        //const cols = [...Array(tilesX)].map(() => {
-        //    return orbs({amount: tilesY})
-        //})
+        const shuffledStars = shuffle(allStars)
 
         const centerPoint = () => {
             return { x: w / 2, y: h / 2 }
         }
         
                    
-        // shuffle(cols).slice(0, tilesX).forEach(col => {
-        //     const randomDelay = gsap.utils.random(1, 5, 1, true)
-        //     const randomStagger = gsap.utils.random(3, 20, .5, true)
-        //     gsap.to(col, {
-        //         stagger: {
-        //             amount: randomStagger(),
-        //             repeat: 1,
-        //             yoyo: true
-        //         },
-        //         delay: randomDelay(),
-        //         repeatDelay: randomDelay(),
-        //         repeatRefresh: true,
-        //         //pixi: {brightness: 3 },
-        //         pixi: {tint: randomRGB() },
-        //         repeat: -1,
-        //     })
-        // })
-
-        
         //Main timeline
         const tl = gsap.timeline()
         // tl.arrangeCircle(_stars1, { duration: 2, stagger: .01, radiusX: 200, radiusY: 200, offset: 0, center: centerPoint() })
@@ -251,46 +241,47 @@ export default function PixiMatrix() {
         // tl.arrangeCircle(_stars1, { duration: 2, stagger: 0, radiusX: 10, radiusY: 10, offset: 0, center: centerPoint() })
         // tl.arrangeGrid(_stars1, { duration: 10, columns: 5})
         let cp = centerPoint()
-        //tl.arrangeCircle(stars2.sprites, { duration: 0, stagger: 0, radiusX: 400, radiusY: 400, offset: 0, center: cp }, 0)
-        //tl.arrangeCircle(stars3.sprites, { duration: 0, stagger: 0, radiusX: 200, radiusY: 200, offset: 0, center: cp }, 0)
         //tl.blinkStagger(stars1.sprites, { duration: 0.3, }, 0)
         // tl.blinkStagger(stars2.sprites, { duration: 0.4, }, 0)
         // tl.blinkStagger(stars3.sprites, { duration: 0.5, }, 0)
         // tl.blinkStagger(stars4.sprites, { duration: 0.6, }, 0)
         // tl.blinkStagger(stars5.sprites, { duration: 0.7, }, 0)
         // tl.blinkStagger(stars6.sprites, { duration: 0.8, }, 0)
-        tl.set(
-            [stars2.sprites,
-            stars3.sprites,
-            stars4.sprites,
-            stars5.sprites,
-            stars6.sprites], {
-                pixi: {
-                    x: function () { return gsap.utils.random(0, w, 0.1, true) },
-                    y: function () { return gsap.utils.random(0, h - 300, 0.1, true) },
+        // tl.set(
+        //     [stars2.sprites,
+        //     stars3.sprites,
+        //     stars4.sprites,
+        //     stars5.sprites,
+        //     stars6.sprites], {
+        //         pixi: {
+        //             x: function () { return gsap.utils.random(0, w, 0.1, true) },
+        //             y: function () { return gsap.utils.random(0, h - 300, 0.1, true) },
                     
-                }
-            }, 0
-        )
+        //         }
+        //     }, 0
+        //     )
         
-        tl.linear(stars1.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 10}, m: 0, s: 27.5}, 1)
-        tl.linear(stars2.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 20}, m: 0, s: 28})
-        tl.linear(stars3.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 30}, m: 0, s: 28.5})
-        tl.linear(stars4.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 40}, m: 0, s: 29})
-        tl.linear(stars5.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 50}, m: 0, s: 29.5})
+        //tl.linear(shuffledStars.slice(0, 40), { duration: 0.2, center: { x: 0, y: cp.y + 130}, m: 0, s: 27.5})
+        //tl.linear(shuffledStars.slice(40, 80), { duration: 0.2, center: { x: 0, y: cp.y + 140}, m: 0, s: 28})
+        //tl.linear(shuffledStars.slice(80, 120), { duration: 0.2, center: { x: 0, y: cp.y + 150}, m: 0, s: 28.5})
+        //tl.linear(shuffledStars.slice(120, 160), { duration: 0.2, center: { x: 0, y: cp.y + 40}, m: 0, s: 29})
+        //tl.linear(shuffledStars.slice(160, 200), { duration: 0.2, center: { x: 0, y: cp.y + 50}, m: 0, s: 29.5})
         
-        tl.linear(stars7.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 60 }, m: 0, s: 30 })
-        tl.linear(stars8.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 70}, m: 0, s: 30.5})
-        tl.linear(stars9.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 80}, m: 0, s: 30.5})
-        tl.linear(stars10.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 90 }, m: 0, s: 30.5 })
-        tl.linear(stars11.sprites, { duration: 0.2, center: { x: 0, y: cp.y + 100}, m: 0, s: 30})
+        // tl.linear(shuffledStars.slice(200, 240), { duration: 0.2, center: { x: 0, y: cp.y + 60 }, m: 0, s: 30 })
+        // tl.linear(shuffledStars.slice(240, 280), { duration: 0.2, center: { x: 0, y: cp.y + 70}, m: 0, s: 30.5})
+        // tl.linear(shuffledStars.slice(280, 320), { duration: 0.2, center: { x: 0, y: cp.y + 85}, m: 0, s: 31})
+        // tl.linear(shuffledStars.slice(320, 360), { duration: 0.2, center: { x: 0, y: cp.y + 100 }, m: 0, s: 31.4 })
+        // tl.linear(shuffledStars.slice(360, 400), { duration: 0.2, center: { x: 0, y: cp.y + 115}, m: 0, s: 31.8})
         
+       // tl.arrangeCircle(stars1.sprites, { duration: 20, stagger: 0, radiusX: 300, radiusY: 300, offset: 0, center: {x: cp.x + 100, y: cp.y} },4)
+       // tl.arrangeCircle(stars2.sprites, { duration: 10, stagger: 0, radiusX: 500, radiusY: 300, offset: 0, center: {x: cp.x - 100, y: cp.y} },)
+       // tl.arrangeCircle(stars3.sprites, { duration: 5, stagger: 0, radiusX: 500, radiusY: 200, offset: 0, center: cp },)
         
         
         
         
         // gsap.to(background, {
-        //     duration: 1,
+            //     duration: 1,
         //     repeatRefresh: true,
         //     pixi: {
         //         colorize: 'purple'
@@ -360,85 +351,79 @@ export default function PixiMatrix() {
         // })
 
         // //galaxy
-        // const _2PI = 2 * Math.PI;
-        // const PI = Math.PI;
-        // let Rx = 270
-        // let Ry = 100
-        // let off = 0
-        // let xPI = Math.PI * 1 
-        // let yPI = Math.PI * 1
+        const _2PI = 2 * Math.PI;
+        const PI = Math.PI;
+        let Rx = 370
+        let Ry = 120
+        let off = 0
+        let xPI = Math.PI * 1 
+        let yPI = Math.PI * 1
         
-        // tl.to(stars1.sprites, {
-        //     ease: 'none',
-        //     repeat: -1,
+        tl.to(shuffledStars, {
+            ease: 'none',
+            repeat: -1,
             
-        //     onRepeat: function () {
-        //         //xPI += 1.1
-        //         //yPI += 1.1
-        //         //Rx += 1.1
-        //         //Ry *= 1
-        //     },
+            onRepeat: function () {
+                //xPI += 1.1
+                //yPI += 1.1
+                //Rx += 1.1
+                //Ry *= 1
+            },
             
-        //     onUpdate: function () {
-        //         off += 0.0003
-        //         gsap.to(stars1.sprites, {
-        //             duration: 1,
-        //             ease: 'none',
-        //             pixi: {
-        //                 x: function (i) {
-        //                     const f = (w / 2) + Rx * Math.sin((i + off ) * (_2PI * i * off  / stars1.amount))
-        //                     return f
-        //                 },
-        //                 y: function (i) {
-        //                     const f = (h / 2) + Ry * Math.cos((i + off ) * (_2PI * i  * off / stars1.amount))
-        //                     return f
-        //                 },
-        //                 //colorize: randomRGB,
-        //                 //brightness: gsap.utils.random(1, 3, .1, true),
-        //             },
-        //         })
-        //     },
-        //     repeatRefresh: true,
-        //     paused:true
-        // }, 0)
-
-        
+            onUpdate: function () {
+                off += 0.00009
+                gsap.to(shuffledStars, {
+                    duration: 1,
+                    ease: 'none',
+                    pixi: {
+                        x: function (i) {
+                            const f = (w / 2) + Rx * Math.sin((i + off ) * (_2PI * i * off  / stars1.amount))
+                            return f
+                        },
+                        y: function (i) {
+                            const f = (h / 2) + Ry * Math.cos((i + off ) * (_2PI * i  * off / stars1.amount))
+                            return f
+                        },
+                        //colorize: effects.randomRGB,
+                        brightness: gsap.utils.random(1, 1, .1, true),
+                    },
+                })
+            },
+            repeatRefresh: true,
+            //paused:true
+        }, 1)
 
         //falling
-        // const step = (2 * Math.PI) / stars1.amount
-        // const i = gsap.utils.random(0, stars1.amount, 1, true)
+        const step = (2 * Math.PI) / stars1.amount
+        const i = gsap.utils.random(0, stars1.amount, 1, true)
       
-        // gsap.fromTo(stars1.sprites, {
-        //     pixi: () => {
-        //         const _i = i()
-        //         return {
-        //         x: function () {
-        //             return globalX + circleRadius * Math.cos(_i * step)
-        //         },
-        //         y: function () { return globalY + circleRadius * Math.sin(_i * step) },
-        //         //alpha: 1,
-                
-        //         //scale: gsap.utils.random(.01, .08, .001, true),
-        //     }}
-        // },
-        //     {
-        //     ease: 'circle',
-        //     duration: gsap.utils.random(1, 5, .01, true),
-        //         pixi: {
-        //             y: function() {return `+=${gsap.utils.random(50, 150, 1)}`},
-        //             //colorize: gsap.utils.random(['yellow', 'orange', 'white'], true),
-        //             //brightness: gsap.utils.random(0.9, 1.1, .1, true),
-        //             //alpha: 0,
-        //         },
-        //     stagger: {
-        //         each: .01,
-        //         from: 'random',
-        //         repeat: -1,
-        //         repeatRefresh: true,
+        gsap.fromTo(shuffledStars.slice(0,200), {
+            pixi: () => {
+                const _i = i()
+                return {
+                x: function () {
+                    return globalX + circleRadius * Math.cos(_i * step)
+                },
+                y: function () { return globalY + circleRadius * Math.sin(_i * step) },
+            }}
+        },
+            {
+            ease: 'circle',
+            duration: gsap.utils.random(1, 5, .01, true),
+                pixi: {
+                    y: function() {return `+=${gsap.utils.random(50, 150, 1)}`},
+                    //colorize: gsap.utils.random(['yellow', 'orange', 'white'], true),
+                    //brightness: gsap.utils.random(0.9, 1.1, .1, true),
+                },
+            stagger: {
+                each: .01,
+                from: 'random',
+                repeat: -1,
+                repeatRefresh: true,
                
-        //         },
-        //     paused: true
-        // })
+                },
+            paused: true
+        },4)
         
         const tl2 = gsap.timeline()
         
@@ -536,22 +521,48 @@ export default function PixiMatrix() {
             return {x: globalX, y: globalY}
         }
 
+
+        const wave = () => {
+            const tl = new gsap.timeline().timeScale(5)
+            tl.wave(allStars, {
+                grid: [10, 40],
+                each: 3,//gsap.utils.random(0.2, 0.4, .1),
+                from: [gsap.utils.random(0, 1, .1), 0 ],
+                    //gsap.utils.random(0, 10, 1)],
+                //axis: 'x',
+                height: 10,//gsap.utils.random(10, 30, 1),
+                repeat: 0
+            })
+        }
+        setHandler(() => wave)
+
         //expand
         let scene = 1
-
+       
         function onClick(e) {
-            const tl = new gsap.timeline().timeScale(3)
-            const rndH = gsap.utils.random(10, 150, 1, true)
-            tl.wave(stars1.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
-            tl.wave(stars2.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
-            tl.wave(stars3.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
-            tl.wave(stars4.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
-            tl.wave(stars5.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
-            tl.wave(stars7.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
-            tl.wave(stars8.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
-            tl.wave(stars9.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
-            tl.wave(stars10.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
-            tl.wave(stars11.sprites, { each: 0.123, from:'end', height: rndH(), repeat: 0},0)
+            //const tl = new gsap.timeline().timeScale(5)
+            // tl.wave(allStars, {
+            //     //grid: [10, 40],
+            //     each: 0.4,//gsap.utils.random(0.2, 0.4, .1),
+            //     from: 'end',//[gsap.utils.random(0, 1, .1), 0 ],
+            //         //gsap.utils.random(0, 10, 1)],
+            //     //axis: 'x',
+            //     height: 30,//gsap.utils.random(10, 30, 1),
+            //     repeat: 0
+            // })
+            // const rndH = gsap.utils.random(10, 150, 1, true)
+            // const repeat = -1
+            // const each = .153
+            // tl.wave(stars1.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
+            // tl.wave(stars2.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
+            // tl.wave(stars3.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
+            // tl.wave(stars4.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
+            // tl.wave(stars5.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
+            // tl.wave(stars7.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
+            // tl.wave(stars8.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
+            // tl.wave(stars9.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
+            // tl.wave(stars10.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
+            // tl.wave(stars11.sprites, { each: each, from:'end', height: rndH(), repeat: repeat},0)
             //console.log(globalX / w, globalY / h)
             // gsap.effects.arrangeSpiral(stars1.sprites, {
             //     ease: 'none',
@@ -669,5 +680,5 @@ export default function PixiMatrix() {
 
        
     }, []);
-  return <></>;
+    return <>{PlayBtn}{PauseBtn}{TrackBtn}</>;
 }

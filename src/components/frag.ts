@@ -4,6 +4,7 @@ precision mediump float;
 uniform float time;
 uniform vec2 mouse;
 uniform vec2 resolution;
+uniform float speed;
 varying vec2 vTextureCoord;
 uniform vec4 filterArea;
 uniform vec2 dimensions;
@@ -68,12 +69,12 @@ void main( void ) {
     //st = brickTile(st,10.0);
 
     //color = vec3(box(st,vec2(0.970,0.970)));
-    float speed = 2.0;
+    //float speed = 2.0;
     color = vec3(
         Star(
             st - 0.5,
-            0.1 + sin(time * PI * speed),
-            0.9 + sin(time * PI * speed)
+            0.5 * sin(time * PI * speed),
+            0.711 + sin(time * PI * speed)
         )
     );
 

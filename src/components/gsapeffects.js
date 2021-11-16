@@ -155,8 +155,8 @@ gsap.registerEffect({
         return gsap.to(targets,
             {
                 stagger: {
-                    each,
-                    //amount,
+                    //each,
+                    amount: 3,
                     repeat: 1,
                     repeatRefresh: true,
                     from,
@@ -164,7 +164,7 @@ gsap.registerEffect({
                     axis,
                     yoyo: true,
                 },
-                ease: 'sine.In',
+                ease: 'sine',
                 duration: duration,
                 repeat,
                 pixi: {
